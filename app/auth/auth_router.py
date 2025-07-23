@@ -5,6 +5,7 @@ from app.db.schemas import UserCreate, UserLogin, UserOut
 from app.models.user import User
 from app.auth.auth_utils import hash_password, verify_password, get_user_by_email
 from app.auth.jwt_handler import create_access_token
+from sqlalchemy.exc import SQLAlchemyError
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -15,16 +16,21 @@ def get_db():
     finally:
         db.close()
 
+
 @router.post("/register", response_model=UserOut)
 def register(user: UserCreate, db: Session = Depends(get_db)):
-    if get_user_by_email(db, user.email):
-        raise HTTPException(status_code=400, detail="Email already registered")
-    hashed = hash_password(user.password)
-    new_user = User(email=user.email, hashed_password=hashed)
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-    return new_user
+    try:
+        if get_user_by_email(db, user.email):
+            raise HTTPException(status_code=400, detail="Email already registered")
+        hashed = hash_password(user.password)
+        new_user = User(email=user.email, hashed_password=hashed)
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+        return new_user
+    except SQLAlchemyError as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail="Database error")
 
 @router.post("/login")
 def login(user: UserLogin, db: Session = Depends(get_db)):
