@@ -6,6 +6,7 @@ from app.models.user import User
 from app.auth.auth_utils import hash_password, verify_password, get_user_by_email
 from app.auth.jwt_handler import create_access_token
 from sqlalchemy.exc import SQLAlchemyError
+from app.auth.dependencies import get_current_user_email
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -53,3 +54,7 @@ def login(
     token = create_access_token(data={"sub": db_user.email})
     return {"access_token": token, "token_type": "bearer"}
 
+
+@router.get("/me")
+def read_me(user_email: str = Depends(get_current_user_email)):
+    return {"email": user_email}

@@ -6,7 +6,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.auth import auth_router
 from app.api import upload  # assuming upload.py is here
 
-from app.auth.dependencies import get_current_user_email
 from app.db.database import check_db_connection
 
 app = FastAPI(
@@ -29,11 +28,6 @@ app.include_router(auth_router.router)
 app.include_router(
     upload.router, prefix="/audio", tags=["audio"]
 )  # or adjust as needed
-
-
-@app.get("/me")
-def read_me(user_email: str = Depends(get_current_user_email)):
-    return {"email": user_email}
 
 
 @app.get("/health", summary="System Health Check")
