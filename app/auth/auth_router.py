@@ -31,7 +31,7 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
         return new_user
     except SQLAlchemyError as e:
         db.rollback()
-        raise HTTPException(status_code=500, detail="Database error")
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
 @router.post("/login")
 def login(user: UserLogin, db: Session = Depends(get_db)):
