@@ -7,7 +7,6 @@ from app.services.transcription_service import transcribe_audio
 
 from app.db.database import get_db
 from app.models import Transcription, User
-# from app.auth.dependencies import get_current_user_email
 from app.auth.dependencies import get_current_user
 
 router = APIRouter()
@@ -16,7 +15,7 @@ router = APIRouter()
 async def upload_audio(
     file: UploadFile = File(...),
     prompt: str = "",
-    current_user_email: str = Depends(get_current_user_email),
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     # 1. Validate audio file type
@@ -28,9 +27,23 @@ async def upload_audio(
         with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as tmp:
             tmp.write(await file.read())
             tmp_path = tmp.name
+            
+        transcription = Transcription(
+            user_id=current_user.id,
+            file_path=tmp_path,
+            prompt=prompt,
+            status="processing"
+        )
+        db.add(transcription)
+        db.commit()
+        db.refresh(transcription)
 
         # 3. Transcribe using Whisper
         transcript_text = transcribe_audio(tmp_path, prompt=prompt)
+        
+        transcription.status = "done"
+        transcription.result = transcript_text.strip()
+        db.commit()
 
         # 4. Return transcript
         return {
@@ -39,6 +52,9 @@ async def upload_audio(
         }
 
     except Exception as e:
+        transcription.status = "failed"
+        transcription.error_message = str(e)
+        db.commit()
         raise HTTPException(status_code=500, detail=f"Transcription failed: {str(e)}")
 
     finally:

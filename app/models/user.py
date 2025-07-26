@@ -2,6 +2,8 @@ from sqlalchemy import Column, Integer, String, DateTime
 from datetime import datetime, timezone
 from app.db.database import Base
 from sqlalchemy import Boolean
+from sqlalchemy.orm import relationship
+
 
 class User(Base):
     __tablename__ = "users"
@@ -10,5 +12,6 @@ class User(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
     telegram_id = Column(String, nullable=True)
-    is_admin = Column(Boolean, default=False)  # ➕ Add this line
+    is_admin = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.now(timezone.utc))
+    transcriptions = relationship("Transcription", back_populates="user")
