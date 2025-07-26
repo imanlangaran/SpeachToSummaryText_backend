@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Form
 from sqlalchemy.orm import Session
-from app.db.database import SessionLocal
+from app.db.database import get_db
 from app.db.schemas import UserCreate, UserLogin, UserOut
 from app.models.user import User
 from app.auth.auth_utils import hash_password, verify_password, get_user_by_email
@@ -9,13 +9,6 @@ from sqlalchemy.exc import SQLAlchemyError
 from app.auth.dependencies import get_current_user_email
 
 router = APIRouter(prefix="/auth", tags=["auth"])
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 @router.post("/register", response_model=UserOut)
