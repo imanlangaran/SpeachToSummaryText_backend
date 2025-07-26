@@ -7,6 +7,8 @@ from app.auth import auth_router
 from app.api import upload  # assuming upload.py is here
 
 from app.db.database import check_db_connection
+from app.models.user import User
+from app.auth.dependencies import admin_required
 
 app = FastAPI(
     title="Voice Summary API",

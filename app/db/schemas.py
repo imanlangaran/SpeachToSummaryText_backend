@@ -1,4 +1,5 @@
 from pydantic import BaseModel, EmailStr
+from datetime import datetime
 
 class UserCreate(BaseModel):
     email: EmailStr
@@ -10,7 +11,10 @@ class UserLogin(BaseModel):
 
 class UserOut(BaseModel):
     id: int
-    email: EmailStr
+    email: str
+    telegram_id: str | None = None
+    is_admin: bool
+    created_at: datetime
 
     class Config:
         orm_mode = True
