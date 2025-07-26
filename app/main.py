@@ -4,7 +4,7 @@ from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.auth import auth_router
-from app.api import upload  # assuming upload.py is here
+from app.api import upload, prompt 
 
 from app.db.database import check_db_connection
 from app.models.user import User
@@ -29,7 +29,8 @@ app.add_middleware(
 app.include_router(auth_router.router)
 app.include_router(
     upload.router, prefix="/audio", tags=["audio"]
-)  # or adjust as needed
+) 
+app.include_router(prompt.router)
 
 
 @app.get("/health", summary="System Health Check")

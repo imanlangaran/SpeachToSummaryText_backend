@@ -1,0 +1,17 @@
+# app/models/prompt.py
+
+from sqlalchemy import Column, Integer, String, Text, Boolean, DateTime
+from datetime import datetime, timezone
+from app.db.database import Base
+
+class Prompt(Base):
+    __tablename__ = "prompts"
+
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String(100), nullable=False)  # optional name for display
+    content = Column(Text, nullable=False)       # actual prompt content
+
+    is_deleted = Column(Boolean, default=False)
+
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
