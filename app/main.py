@@ -9,6 +9,7 @@ from app.api import upload, prompt
 from app.db.database import check_db_connection
 from app.models.user import User
 from app.auth.dependencies import admin_required
+from fastapi.responses import RedirectResponse
 
 app = FastAPI(
     title="Voice Summary API",
@@ -27,11 +28,10 @@ app.add_middleware(
 
 # Include routers (don't add prefix here since it's already in the module)
 app.include_router(auth_router.router)
-app.include_router(
-    upload.router, prefix="/audio", tags=["audio"]
-) 
+app.include_router(upload.router) 
 app.include_router(prompt.router)
 
+app.add_route('/', RedirectResponse('/docs'))
 
 @app.get("/health", summary="System Health Check")
 async def health_check(include_db: bool = True):

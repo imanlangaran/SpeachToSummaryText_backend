@@ -9,7 +9,7 @@ from app.db.database import get_db
 from app.models import Transcription, User
 from app.auth.dependencies import get_current_user
 
-router = APIRouter()
+router = APIRouter(prefix="/audio", tags=["audio"])
 
 @router.post("/upload", response_model=None)
 async def upload_audio(
