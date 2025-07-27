@@ -7,7 +7,7 @@ from app.services.transcription_service import transcribe_audio
 from app.services.summarise_service import summarise_text
 
 from app.db.database import get_db
-from app.models import Transcription, User, Prompt
+from app.models import Transcription, User, Prompt, Summary
 from app.auth.dependencies import get_current_user
 
 router = APIRouter(prefix="/audio", tags=["audio"])
@@ -75,7 +75,20 @@ def testing(
         خلاصه:\n\nدر سال ۱۹۵۴، یک فروشنده به نام ریکیراک وارد رستوران مک‌دونالد شد و متوجه شد که آنجا همه کارها بسیار سیستماتیک و دقیق انجام می‌شود. صاحبان رستوران کارها را به سه بخش «چی»، «چطور» و «چرا» تقسیم کرده و برای حتی ساده‌ترین کارها دستورالعمل مشخص داشتند. این سیستم باعث می‌شد که کارمندان جدید خیلی سریع آموزش ببینند و با همان کیفیت کار کنند. ریکیراک فهمید این مدل قابل تکثیر است و همین زمینه‌ساز گسترش مک‌دونالد شد. پیام اصلی این است که در کسب‌وکار، باید هر کاری که بیش از دو بار تکرار می‌شود با دستورالعمل مدون انجام شود تا سیستم‌پذیر و قابل رشد باشد. در پایان، سؤال می‌شود: کدام کارها فقط شما می‌دانید و اگر شخص جدیدی اضافه شود چقدر سریع می‌تواند جایگزین شود؟
         '''
         
+        summary = Summary(
+            user_id=current_user.id,
+            status='pending',
+            prompt_id= summaryPromptId
+        )
+        db.add(summary)
+        db.commit()
+        db.refresh(summary)
+        
         summarised_text = summarise_text(transcript_text, prompt)
+        
+        summary.status = 'success'
+        summary.summary = summarised_text
+        db.commit()
         
         return {
             'sucess' : 'true',
@@ -84,6 +97,9 @@ def testing(
             }
         }
     except Exception as e:
+        summary.status = 'error'
+        summary.result = str(e)
+        db.commit()
         raise HTTPException(status_code=500, detail=f"Transcription failed: {str(e)}")
 
         
