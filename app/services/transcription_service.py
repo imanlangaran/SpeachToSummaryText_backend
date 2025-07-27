@@ -1,11 +1,9 @@
 import os
-from openai import OpenAI
-from dotenv import load_dotenv
 from pydub import AudioSegment
 import tempfile
+from app.services.openai_client import get_openai_client
 
-load_dotenv()
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+client = get_openai_client()
 
 MAX_DURATION_MS = 2 * 60 * 1000  # 2 minutes in milliseconds
 MAX_FILE_SIZE_MB = 25
