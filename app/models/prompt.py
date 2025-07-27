@@ -3,6 +3,7 @@
 from sqlalchemy import Column, Integer, String, Text, Boolean, DateTime
 from datetime import datetime, timezone
 from app.db.database import Base
+from sqlalchemy.orm import relationship
 
 class Prompt(Base):
     __tablename__ = "prompts"
@@ -15,3 +16,5 @@ class Prompt(Base):
 
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+
+    summaries = relationship("Summary", back_populates="prompt", cascade="all, delete-orphan")

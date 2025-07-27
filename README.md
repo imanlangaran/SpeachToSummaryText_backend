@@ -3,5 +3,5 @@
   uploaded file data (length, word count, the transcription), userid, 
 
   summery
-    userid, fileid, result(the apenai's upload result), status?, summery, 
+    userid, result(the apenai's upload result), status?, the summery, 
 [x] CRUDs for prompts

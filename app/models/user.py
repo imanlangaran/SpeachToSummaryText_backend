@@ -15,3 +15,5 @@ class User(Base):
     is_admin = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.now(timezone.utc))
     transcriptions = relationship("Transcription", back_populates="user")
+
+    summaries = relationship("Summary", back_populates="user", cascade="all, delete-orphan")
