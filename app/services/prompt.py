@@ -1,21 +1,17 @@
 # app/routes/prompt_router.py
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from app.db.database import get_db
 from app.models.prompt import Prompt
 from app.models.user import User
 from app.auth.dependencies import admin_required
 
-router = APIRouter(prefix="/prompts", tags=["prompts"])
 
-
-@router.post("/")
 def create_prompt(
     title: str,
     content: str,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(admin_required)
+    db: Session = Depends(get_db)
 ):
     prompt = Prompt(title=title, content=content)
     db.add(prompt)
@@ -24,11 +20,9 @@ def create_prompt(
     return prompt
 
 
-@router.get("/")
 def list_prompts(
     include_deleted: bool = Query(False),
-    db: Session = Depends(get_db),
-    current_user: User = Depends(admin_required)
+    db: Session = Depends(get_db)
 ):
     query = db.query(Prompt)
     if not include_deleted:
@@ -36,13 +30,11 @@ def list_prompts(
     return query.order_by(Prompt.updated_at.desc()).all()
 
 
-@router.put("/{prompt_id}")
 def update_prompt(
     prompt_id: int,
     title: str,
     content: str,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(admin_required)
+    db: Session = Depends(get_db)
 ):
     prompt = db.query(Prompt).filter(Prompt.id == prompt_id).first()
     if not prompt:
@@ -54,11 +46,9 @@ def update_prompt(
     return prompt
 
 
-@router.patch("/{prompt_id}/delete")
 def soft_delete_prompt(
     prompt_id: int,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(admin_required)
+    db: Session = Depends(get_db)
 ):
     prompt = db.query(Prompt).filter(Prompt.id == prompt_id).first()
     if not prompt:
@@ -69,11 +59,9 @@ def soft_delete_prompt(
     return {"message": "Prompt deleted"}
 
 
-@router.patch("/{prompt_id}/restore")
 def restore_prompt(
     prompt_id: int,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(admin_required)
+    db: Session = Depends(get_db)
 ):
     prompt = db.query(Prompt).filter(Prompt.id == prompt_id).first()
     if not prompt:

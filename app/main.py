@@ -1,10 +1,12 @@
 # app/main.py
 
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.auth import auth_router
-from app.api import upload, prompt 
+from app.api import upload
+
+from app.api.admin.routes import adminRoute
 
 from app.db.database import check_db_connection
 from app.models.user import User
@@ -29,7 +31,9 @@ app.add_middleware(
 # Include routers (don't add prefix here since it's already in the module)
 app.include_router(auth_router.router)
 app.include_router(upload.router) 
-app.include_router(prompt.router)
+# app.include_router(prompt.router)
+
+app.include_router(adminRoute)
 
 app.add_route('/', RedirectResponse('/docs'))
 
