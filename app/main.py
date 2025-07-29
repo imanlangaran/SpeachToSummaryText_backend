@@ -9,8 +9,6 @@ from app.api import upload
 from app.api.admin.routes import adminRoute
 
 from app.db.database import check_db_connection
-from app.models.user import User
-from app.auth.dependencies import admin_required
 from fastapi.responses import RedirectResponse
 
 app = FastAPI(
