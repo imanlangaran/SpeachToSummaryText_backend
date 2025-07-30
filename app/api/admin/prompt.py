@@ -11,7 +11,7 @@ router = APIRouter(prefix="/prompt" , tags=['admin'])
 
 
 @router.post("/")
-def create_prompt(
+def create(
     title: str,
     content: str,
     db: Session = Depends(get_db),
@@ -21,7 +21,7 @@ def create_prompt(
 
 
 @router.get("/")
-def list_prompts(
+def list(
     include_deleted: bool = Query(False),
     db: Session = Depends(get_db),
     current_user: User = Depends(admin_required),
@@ -30,7 +30,7 @@ def list_prompts(
 
 
 @router.put("/{prompt_id}")
-def update_prompt(
+def update(
     prompt_id: int,
     title: str,
     content: str,
@@ -41,7 +41,7 @@ def update_prompt(
 
 
 @router.patch("/{prompt_id}/delete")
-def soft_delete_prompt(
+def soft_delete(
     prompt_id: int,
     db: Session = Depends(get_db),
     current_user: User = Depends(admin_required),
@@ -50,7 +50,7 @@ def soft_delete_prompt(
 
 
 @router.patch("/{prompt_id}/restore")
-def restore_prompt(
+def restore(
     prompt_id: int,
     db: Session = Depends(get_db),
     current_user: User = Depends(admin_required),

@@ -11,7 +11,7 @@ from app.auth.dependencies import admin_required
 def create_prompt(
     title: str,
     content: str,
-    db: Session = Depends(get_db)
+    db: Session 
 ):
     prompt = Prompt(title=title, content=content)
     db.add(prompt)
@@ -21,8 +21,8 @@ def create_prompt(
 
 
 def list_prompts(
-    include_deleted: bool = Query(False),
-    db: Session = Depends(get_db)
+    include_deleted: bool,
+    db: Session
 ):
     query = db.query(Prompt)
     if not include_deleted:
@@ -34,7 +34,7 @@ def update_prompt(
     prompt_id: int,
     title: str,
     content: str,
-    db: Session = Depends(get_db)
+    db: Session
 ):
     prompt = db.query(Prompt).filter(Prompt.id == prompt_id).first()
     if not prompt:
@@ -48,7 +48,7 @@ def update_prompt(
 
 def soft_delete_prompt(
     prompt_id: int,
-    db: Session = Depends(get_db)
+    db: Session
 ):
     prompt = db.query(Prompt).filter(Prompt.id == prompt_id).first()
     if not prompt:
@@ -61,7 +61,7 @@ def soft_delete_prompt(
 
 def restore_prompt(
     prompt_id: int,
-    db: Session = Depends(get_db)
+    db: Session
 ):
     prompt = db.query(Prompt).filter(Prompt.id == prompt_id).first()
     if not prompt:
