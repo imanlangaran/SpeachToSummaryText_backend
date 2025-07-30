@@ -61,7 +61,7 @@ async def upload_summerize(
     transcribePrompt: str ,
     summaryPromptId: int ,
     current_user: User ,
-    db: Session ,
+    db: Session 
 ):
     # 1. Validate audio file type
     if not file.content_type.startswith("audio/"):
@@ -131,3 +131,6 @@ async def upload_summerize(
     finally:
         if os.path.exists(tmp_path):
             os.remove(tmp_path)
+
+async def summarize():
+    return 'hiii'
