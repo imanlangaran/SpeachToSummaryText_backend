@@ -29,7 +29,7 @@ app.add_middleware(
 
 # Include routers (don't add prefix here since it's already in the module)
 app.include_router(auth_router.router)
-app.include_router(upload.router) 
+# app.include_router(upload.router) 
 # app.include_router(prompt.router)
 
 app.include_router(adminRoute)
