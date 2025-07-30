@@ -1,12 +1,8 @@
 # app/routes/prompt_router.py
 
-from fastapi import Depends, HTTPException, Query
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from app.db.database import get_db
 from app.models.prompt import Prompt
-from app.models.user import User
-from app.auth.dependencies import admin_required
-
 
 def create_prompt(
     title: str,
