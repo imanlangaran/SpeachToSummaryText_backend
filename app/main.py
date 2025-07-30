@@ -7,6 +7,7 @@ from app.auth import auth_router
 from app.api import upload
 
 from app.api.admin.routes import adminRoute
+from app.api.client.routes import clientRoute
 
 from app.db.database import check_db_connection
 from fastapi.responses import RedirectResponse
@@ -32,6 +33,7 @@ app.include_router(upload.router)
 # app.include_router(prompt.router)
 
 app.include_router(adminRoute)
+app.include_router(clientRoute)
 
 app.add_route('/', RedirectResponse('/docs'))
 
