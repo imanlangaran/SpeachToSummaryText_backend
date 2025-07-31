@@ -10,10 +10,10 @@ from app.models import Transcription, User, Prompt, Summary
 
 
 async def upload_audio(
-    file: UploadFile ,
-    prompt: str ,
-    current_user: User ,
-    db: Session ,
+    file: UploadFile,
+    prompt: str,
+    current_user: User,
+    db: Session,
 ):
     # 1. Validate audio file type
     if not file.content_type.startswith("audio/"):
@@ -57,16 +57,16 @@ async def upload_audio(
 
 
 async def upload_summerize(
-    file: UploadFile ,
-    transcribePrompt: str ,
-    summaryPromptId: int ,
-    current_user: User ,
-    db: Session 
+    file: UploadFile,
+    transcribePrompt: str,
+    summaryPromptId: int,
+    current_user: User,
+    db: Session,
 ):
     # 1. Validate audio file type
     if not file.content_type.startswith("audio/"):
         raise HTTPException(status_code=400, detail="Only audio files are accepted")
-    
+
     prompt = db.query(Prompt).filter(Prompt.id == summaryPromptId).first()
     if summaryPromptId == -1 or not prompt:
         raise HTTPException(status_code=404, detail="Prompt not found")
@@ -96,41 +96,76 @@ async def upload_summerize(
         db.commit()
 
         summary = Summary(
-            user_id=current_user.id,
-            status='pending',
-            prompt_id= summaryPromptId
+            user_id=current_user.id, status="pending", prompt_id=summaryPromptId
         )
         db.add(summary)
         db.commit()
         db.refresh(summary)
-        
+
         summarised_text = summarise_text(transcript_text, prompt)
-        
-        summary.status = 'success'
+
+        summary.status = "success"
         summary.summary = summarised_text
         db.commit()
-        
-        return {
-            'sucess' : 'true',
-            'data' : {
-                'summarise_text' : summarised_text
-            }
-        }
+
+        return {"sucess": "true", "data": {"summarise_text": summarised_text}}
 
     except Exception as e:
         transcription.status = "failed"
         transcription.error_message = str(e)
-        
+
         # if summary is not None:
         #     summary.status = 'error'
         #     summary.result = str(e)
-        
+
         db.commit()
-        raise HTTPException(status_code=500, detail=f"Transcription/Summarization failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Transcription/Summarization failed: {str(e)}"
+        )
 
     finally:
         if os.path.exists(tmp_path):
             os.remove(tmp_path)
 
-async def summarize():
-    return 'hiii'
+
+async def summarize(audioId: int, summaryPromptId: int, currentUser: User, db: Session):
+    # 1. Validate audio file type
+
+    prompt = db.query(Prompt).filter(Prompt.id == summaryPromptId).first()
+    if summaryPromptId == -1 or not prompt:
+        raise HTTPException(status_code=404, detail="Prompt not found")
+
+    transcript_text = (
+        db.query(Transcription).filter(Transcription.id == audioId).first()
+    )
+    if transcript_text == -1 or not transcript_text:
+        raise HTTPException(status_code=404, detail="Audio not found")
+
+    # 2. Save to a temporary location
+    try:
+
+        summary = Summary(
+            user_id=currentUser.id, status="pending", prompt_id=summaryPromptId
+        )
+        db.add(summary)
+        db.commit()
+        db.refresh(summary)
+
+        summarised_text = summarise_text(transcript_text, prompt)
+
+        summary.status = "success"
+        summary.summary = summarised_text
+        db.commit()
+
+        return {"sucess": "true", "data": {"summarise_text": summarised_text}}
+
+    except Exception as e:
+
+        if summary is not None:
+            summary.status = "error"
+            summary.result = str(e)
+
+        db.commit()
+        raise HTTPException(
+            status_code=500, detail=f"Transcription/Summarization failed: {str(e)}"
+        )
