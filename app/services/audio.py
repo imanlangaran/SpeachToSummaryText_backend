@@ -169,3 +169,19 @@ async def summarize(audioId: int, summaryPromptId: int, currentUser: User, db: S
         raise HTTPException(
             status_code=500, detail=f"Transcription/Summarization failed: {str(e)}"
         )
+
+
+def get_all_user_audio(currentUser: User, db: Session):
+    try:
+        audio_records = (
+            db.query(Transcription).filter(Transcription.user_id == currentUser.id).all()
+        )
+        if not audio_records:
+            raise HTTPException(
+                status_code=404, detail="No audio files found for this user."
+            )
+        return {"success": "true", "data": audio_records}
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Error retrieving audio files: {str(e)}"
+        )
