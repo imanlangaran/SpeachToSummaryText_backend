@@ -43,6 +43,15 @@ def all_user_audio(
     return get_all_user_audio(currentUser=currentUser, db=db)
 
 
+@router.get("/{audio_id}", response_model=None)
+def user_audio_summaries(
+    audio_id: int = -1,
+    currentUser: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    return get_user_audio_summaries(audio_id=audio_id, currentUser=currentUser, db=db)
+
+
 @router.post("/summarize", response_model=None)
 async def sm(
     audioId: int = -1,

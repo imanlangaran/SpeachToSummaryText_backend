@@ -1,5 +1,6 @@
 from fastapi import UploadFile, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy import and_
 import os
 import tempfile
 
@@ -174,13 +175,42 @@ async def summarize(audioId: int, summaryPromptId: int, currentUser: User, db: S
 def get_all_user_audio(currentUser: User, db: Session):
     try:
         audio_records = (
-            db.query(Transcription).filter(Transcription.user_id == currentUser.id).all()
+            db.query(Transcription)
+            .filter(Transcription.user_id == currentUser.id)
+            .all()
         )
         if not audio_records:
             raise HTTPException(
                 status_code=404, detail="No audio files found for this user."
             )
         return {"success": "true", "data": audio_records}
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Error retrieving audio files: {str(e)}"
+        )
+
+
+def get_user_audio_summaries(audio_id: int, currentUser: User, db: Session):
+    if audio_id == -1:
+        raise HTTPException(
+            status_code=404, detail="No audio files found for this user."
+        )
+    try:
+        audio_record = (
+            db.query(Summary)
+            .filter(
+                and_(
+                    Summary.user_id == currentUser.id,
+                    Summary.transcription_id == audio_id,
+                )
+            )
+            .all()
+        )
+        if not audio_record or audio_id == -1:
+            raise HTTPException(
+                status_code=404, detail="No audio files found for this user."
+            )
+        return {"success": "true", "data": audio_record}
     except Exception as e:
         raise HTTPException(
             status_code=500, detail=f"Error retrieving audio files: {str(e)}"

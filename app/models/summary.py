@@ -19,5 +19,8 @@ class Summary(Base):
     summary = Column(Text, nullable=True)  # Final cleaned/generated summary
     prompt_id = Column(Integer, ForeignKey("prompts.id"), nullable=True)
     prompt = relationship("Prompt", back_populates="summaries")
+    
+    transcription_id = Column(Integer, ForeignKey("transcriptions.id"), nullable=True)
+    transcription = relationship("Transcription", back_populates="summaries")
 
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))

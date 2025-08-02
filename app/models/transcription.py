@@ -25,5 +25,7 @@ class Transcription(Base):
         default=datetime.now(timezone.utc),
         onupdate=datetime.now(timezone.utc),
     )
+    
+    summaries = relationship("Summary", back_populates="transcription")
 
     user = relationship("User", back_populates="transcriptions")
