@@ -136,10 +136,10 @@ async def summarize(audioId: int, summaryPromptId: int, currentUser: User, db: S
     if summaryPromptId == -1 or not prompt:
         raise HTTPException(status_code=404, detail="Prompt not found")
 
-    transcript_text = (
+    transcription = (
         db.query(Transcription).filter(Transcription.id == audioId).first()
     )
-    if transcript_text == -1 or not transcript_text:
+    if transcription == -1 or not transcription:
         raise HTTPException(status_code=404, detail="Audio not found")
 
     # 2. Save to a temporary location
@@ -152,7 +152,7 @@ async def summarize(audioId: int, summaryPromptId: int, currentUser: User, db: S
         db.commit()
         db.refresh(summary)
 
-        summarised_text = summarise_text(transcript_text, prompt)
+        summarised_text = summarise_text(transcription.result, prompt)
 
         summary.status = "success"
         summary.summary = summarised_text

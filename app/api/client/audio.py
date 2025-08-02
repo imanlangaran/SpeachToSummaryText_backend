@@ -59,6 +59,6 @@ async def sm(
     currentUser: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    return summarize(
+    return await summarize(
         audioId=audioId, summaryPromptId=summaryPromptId, currentUser=currentUser, db=db
     )
