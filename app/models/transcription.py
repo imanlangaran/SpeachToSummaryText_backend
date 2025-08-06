@@ -12,10 +12,10 @@ class Transcription(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
 
-    file_path = Column(String, nullable=True)
+    file_path = Column(String(512), nullable=True)
     prompt = Column(Text, nullable=True)
 
-    status = Column(String, default="pending")  # pending, processing, done, failed
+    status = Column(String(20), default="pending")  # pending, processing, done, failed
     result = Column(Text, nullable=True)
     error_message = Column(Text, nullable=True)
 
