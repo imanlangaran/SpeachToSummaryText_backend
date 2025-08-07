@@ -5,3 +5,7 @@
   summery
     userid, result(the apenai's upload result), status?, the summery, 
 [x] CRUDs for prompts
+
+venv
+pip install -r requrements.txt
+sudo apt install ffmpeg -y
