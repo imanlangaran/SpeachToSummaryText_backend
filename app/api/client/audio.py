@@ -15,7 +15,7 @@ async def upload(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    return upload_audio(file=file, prompt=prompt, current_user=current_user, db=db)
+    return await upload_audio(file=file, prompt=prompt, current_user=current_user, db=db)
 
 
 @router.post("/upload_summarize", response_model=None)
