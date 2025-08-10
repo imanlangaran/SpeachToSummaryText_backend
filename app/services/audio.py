@@ -44,7 +44,11 @@ async def upload_audio(
         db.commit()
 
         # 4. Return transcript
-        return {"filename": file.filename, "transcript": transcript_text}
+        return {
+            "filename": file.filename,
+            "transcript": transcript_text,
+            "id": transcription.id,
+        }
 
     except Exception as e:
         transcription.status = "failed"
@@ -136,9 +140,7 @@ async def summarize(audioId: int, summaryPromptId: int, currentUser: User, db: S
     if summaryPromptId == -1 or not prompt:
         raise HTTPException(status_code=404, detail="Prompt not found")
 
-    transcription = (
-        db.query(Transcription).filter(Transcription.id == audioId).first()
-    )
+    transcription = db.query(Transcription).filter(Transcription.id == audioId).first()
     if transcription == -1 or not transcription:
         raise HTTPException(status_code=404, detail="Audio not found")
 
