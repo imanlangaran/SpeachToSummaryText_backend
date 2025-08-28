@@ -113,7 +113,7 @@ async def upload_summerize(
         summary.summary = summarised_text
         db.commit()
 
-        return {"sucess": "true", "data": {"summarise_text": summarised_text}}
+        return {"sucess": "true", "data": {"summarise_text": summarised_text, "audioId":transcription.id}}
 
     except Exception as e:
         transcription.status = "failed"
