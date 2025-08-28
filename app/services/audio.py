@@ -5,7 +5,7 @@ import os
 import tempfile
 
 from app.services.transcription_service import transcribe_audio
-from app.services.summarise_service import summarise_text
+from app.services.summarise_service import summarise_text_assistant
 
 from app.models import Transcription, User, Prompt, Summary
 
@@ -107,7 +107,7 @@ async def upload_summerize(
         db.commit()
         db.refresh(summary)
 
-        summarised_text = summarise_text(transcript_text, prompt)
+        summarised_text = summarise_text_assistant(transcript_text, prompt.assistant_id)
 
         summary.status = "success"
         summary.summary = summarised_text
@@ -154,7 +154,9 @@ async def summarize(audioId: int, summaryPromptId: int, currentUser: User, db: S
         db.commit()
         db.refresh(summary)
 
-        summarised_text = summarise_text(transcription.result, prompt)
+        # summarised_text = summarise_text(transcription.result, prompt)
+        summarised_text = summarise_text_assistant(transcription.result, prompt.assistant_id)
+        
 
         summary.status = "success"
         summary.summary = summarised_text
