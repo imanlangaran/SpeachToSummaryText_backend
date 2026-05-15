@@ -20,10 +20,17 @@ def list_prompts(
     include_deleted: bool,
     db: Session
 ):
-    query = db.query(Prompt)
+    query = db.query(
+        Prompt.id,
+        Prompt.title,
+        Prompt.is_deleted
+    )
+
     if not include_deleted:
         query = query.filter(Prompt.is_deleted == False)
-    return query.order_by(Prompt.updated_at.desc()).all()
+
+    results = query.order_by(Prompt.updated_at.desc()).all()
+    return [dict(row._mapping) for row in results]
 
 
 def update_prompt(

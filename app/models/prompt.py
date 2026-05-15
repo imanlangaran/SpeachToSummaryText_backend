@@ -10,7 +10,9 @@ class Prompt(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String(100), nullable=False)  # optional name for display
-    content = Column(Text, nullable=False)       # actual prompt content
+    content = Column(Text, nullable=True)       # actual prompt content
+    
+    assistant_id = Column(Text, nullable=False)
 
     is_deleted = Column(Boolean, default=False)
 

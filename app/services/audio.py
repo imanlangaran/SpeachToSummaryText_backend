@@ -5,7 +5,7 @@ import os
 import tempfile
 
 from app.services.transcription_service import transcribe_audio
-from app.services.summarise_service import summarise_text
+from app.services.summarise_service import summarise_text_assistant
 
 from app.models import Transcription, User, Prompt, Summary
 
@@ -44,7 +44,11 @@ async def upload_audio(
         db.commit()
 
         # 4. Return transcript
-        return {"filename": file.filename, "transcript": transcript_text}
+        return {
+            "filename": file.filename,
+            "transcript": transcript_text,
+            "id": transcription.id,
+        }
 
     except Exception as e:
         transcription.status = "failed"
@@ -103,13 +107,13 @@ async def upload_summerize(
         db.commit()
         db.refresh(summary)
 
-        summarised_text = summarise_text(transcript_text, prompt)
+        summarised_text = summarise_text_assistant(transcript_text, prompt.assistant_id)
 
         summary.status = "success"
         summary.summary = summarised_text
         db.commit()
 
-        return {"sucess": "true", "data": {"summarise_text": summarised_text}}
+        return {"sucess": "true", "data": {"summarise_text": summarised_text, "audioId":transcription.id}}
 
     except Exception as e:
         transcription.status = "failed"
@@ -136,9 +140,7 @@ async def summarize(audioId: int, summaryPromptId: int, currentUser: User, db: S
     if summaryPromptId == -1 or not prompt:
         raise HTTPException(status_code=404, detail="Prompt not found")
 
-    transcription = (
-        db.query(Transcription).filter(Transcription.id == audioId).first()
-    )
+    transcription = db.query(Transcription).filter(Transcription.id == audioId).first()
     if transcription == -1 or not transcription:
         raise HTTPException(status_code=404, detail="Audio not found")
 
@@ -152,7 +154,9 @@ async def summarize(audioId: int, summaryPromptId: int, currentUser: User, db: S
         db.commit()
         db.refresh(summary)
 
-        summarised_text = summarise_text(transcription.result, prompt)
+        # summarised_text = summarise_text(transcription.result, prompt)
+        summarised_text = summarise_text_assistant(transcription.result, prompt.assistant_id)
+        
 
         summary.status = "success"
         summary.summary = summarised_text
