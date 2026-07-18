@@ -3,14 +3,17 @@ from pydub import AudioSegment
 import tempfile
 from app.services.openai_client import get_openai_client
 
-client = get_openai_client()
-
 MAX_DURATION_MS = 2 * 60 * 1000  # 2 minutes in milliseconds
 MAX_FILE_SIZE_MB = 25
 
 
+def _get_client():
+    return get_openai_client()
+
+
 def transcribe_audio(file_path: str, prompt: str | None = None) -> str:
     try:
+        client = _get_client()
         # Load and preprocess audio: set frame rate to 16000 and mono channel
         audio = AudioSegment.from_file(file_path).set_frame_rate(16000).set_channels(1)
 
