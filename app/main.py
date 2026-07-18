@@ -4,8 +4,6 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.auth import auth_router
-from app.api import upload
-
 from app.api.admin.routes import adminRoute
 from app.api.client.routes import clientRoute
 

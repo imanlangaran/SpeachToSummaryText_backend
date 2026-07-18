@@ -32,6 +32,17 @@ def upgrade() -> None:
     )
     op.create_index(op.f('ix_users_email'), 'users', ['email'], unique=True)
     op.create_index(op.f('ix_users_id'), 'users', ['id'], unique=False)
+    op.create_table('prompts',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('title', sa.String(length=100), nullable=False),
+    sa.Column('content', sa.Text(), nullable=True),
+    sa.Column('assistant_id', sa.Text(), nullable=False),
+    sa.Column('is_deleted', sa.Boolean(), nullable=True),
+    sa.Column('created_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('updated_at', sa.DateTime(timezone=True), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_prompts_id'), 'prompts', ['id'], unique=False)
     op.create_table('transcriptions',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
@@ -72,6 +83,8 @@ def downgrade() -> None:
     op.drop_table('summaries')
     op.drop_index(op.f('ix_transcriptions_id'), table_name='transcriptions')
     op.drop_table('transcriptions')
+    op.drop_index(op.f('ix_prompts_id'), table_name='prompts')
+    op.drop_table('prompts')
     op.drop_index(op.f('ix_users_id'), table_name='users')
     op.drop_index(op.f('ix_users_email'), table_name='users')
     op.drop_table('users')
