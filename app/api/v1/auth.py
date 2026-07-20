@@ -38,12 +38,18 @@ async def login_swagger(
     password: str = Form(...),
     db: Session = Depends(get_db),
 ):
+    """Form-based login for Swagger UI's Authorize button.
+    
+    Returns flat token response (not wrapped in standard envelope)
+    because Swagger's OAuth2 flow expects access_token at root level.
+    """
     try:
         svc = AuthService(db)
         result = svc.login(username, password)
-        return success_response(result)
+        return result  # Flat dict: {access_token, token_type}
     except AppException as e:
-        return error_response(e.code, e.message)
+        from fastapi import HTTPException
+        raise HTTPException(status_code=e.status_code, detail=e.message)
 
 
 @router.get("/me")

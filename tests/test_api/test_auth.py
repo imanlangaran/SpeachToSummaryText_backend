@@ -47,8 +47,9 @@ class TestAuthAPI:
         })
         assert resp.status_code == 200
         body = resp.json()
-        assert body["success"] is True
-        assert "access_token" in body["data"]
+        # Swagger endpoint returns flat token (not wrapped in envelope)
+        assert "access_token" in body
+        assert body["token_type"] == "bearer"
 
     def test_me_authenticated(self, client: TestClient, auth_headers):
         resp = client.get("/auth/me", headers=auth_headers)
