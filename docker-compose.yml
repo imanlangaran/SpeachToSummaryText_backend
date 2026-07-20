@@ -1,0 +1,53 @@
+version: "3.8"
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: voice_summary_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_DATABASE: speech_to_summary
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    container_name: voice_summary_api
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    environment:
+      # Database — overriding individual vars builds the DATABASE_URL automatically
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: ""
+      DB_NAME: speech_to_summary
+
+      # Auth
+      SECRET_KEY: "${SECRET_KEY:-change-me-in-production}"
+
+      # AI Provider — set these in a .env file or in your shell
+      AI_PROVIDER: "${AI_PROVIDER:-groq}"
+      GROQ_API_KEY: "${GROQ_API_KEY:-}"
+      OPENAI_API_KEY: "${OPENAI_API_KEY:-}"
+
+      # App
+      CORS_ORIGINS: "${CORS_ORIGINS:-[*]}"
+      UVICORN_EXTRA_ARGS: "--workers 4"
+    env_file:
+      - .env
+
+volumes:
+  mysql_data:
