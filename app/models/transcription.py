@@ -19,11 +19,11 @@ class Transcription(Base):
     result = Column(Text, nullable=True)
     error_message = Column(Text, nullable=True)
 
-    created_at = Column(DateTime, default=datetime.now(timezone.utc))
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at = Column(
         DateTime,
-        default=datetime.now(timezone.utc),
-        onupdate=datetime.now(timezone.utc),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
     )
     
     summaries = relationship("Summary", back_populates="transcription")

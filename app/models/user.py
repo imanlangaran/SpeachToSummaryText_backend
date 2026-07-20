@@ -13,7 +13,7 @@ class User(Base):
     hashed_password = Column(String(60), nullable=False)
     telegram_id = Column(String(128), nullable=True)
     is_admin = Column(Boolean, default=False)
-    created_at = Column(DateTime, default=datetime.now(timezone.utc))
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     transcriptions = relationship("Transcription", back_populates="user")
 
     summaries = relationship("Summary", back_populates="user", cascade="all, delete-orphan")
