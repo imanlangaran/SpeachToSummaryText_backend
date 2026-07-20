@@ -107,7 +107,7 @@ async def upload_summerize(
         db.commit()
         db.refresh(summary)
 
-        summarised_text = summarise_text_assistant(transcript_text, prompt.assistant_id)
+        summarised_text = summarise_text_assistant(transcript_text, prompt.assistant_id, prompt)
 
         summary.status = "success"
         summary.summary = summarised_text
@@ -155,7 +155,7 @@ async def summarize(audioId: int, summaryPromptId: int, currentUser: User, db: S
         db.refresh(summary)
 
         # summarised_text = summarise_text(transcription.result, prompt)
-        summarised_text = summarise_text_assistant(transcription.result, prompt.assistant_id)
+        summarised_text = summarise_text_assistant(transcription.result, prompt.assistant_id, prompt)
         
 
         summary.status = "success"

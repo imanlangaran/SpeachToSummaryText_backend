@@ -7,9 +7,10 @@ from app.models.prompt import Prompt
 def create_prompt(
     title: str,
     content: str,
-    db: Session 
+    db: Session,
+    assistant_id: str | None = None,
 ):
-    prompt = Prompt(title=title, content=content)
+    prompt = Prompt(title=title, content=content, assistant_id=assistant_id)
     db.add(prompt)
     db.commit()
     db.refresh(prompt)
@@ -37,7 +38,8 @@ def update_prompt(
     prompt_id: int,
     title: str,
     content: str,
-    db: Session
+    db: Session,
+    assistant_id: str | None = None,
 ):
     prompt = db.query(Prompt).filter(Prompt.id == prompt_id).first()
     if not prompt:
@@ -45,6 +47,8 @@ def update_prompt(
 
     prompt.title = title
     prompt.content = content
+    if assistant_id is not None:
+        prompt.assistant_id = assistant_id
     db.commit()
     return prompt
 

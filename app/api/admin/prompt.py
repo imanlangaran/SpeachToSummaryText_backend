@@ -14,10 +14,11 @@ router = APIRouter(prefix="/prompt" , tags=['admin'])
 def create(
     title: str,
     content: str,
+    assistant_id: str | None = Query(None),
     db: Session = Depends(get_db),
     current_user: User = Depends(admin_required),
 ):
-    return create_prompt(title=title, content=content, db=db)
+    return create_prompt(title=title, content=content, assistant_id=assistant_id, db=db)
 
 
 @router.get("/")
@@ -34,10 +35,11 @@ def update(
     prompt_id: int,
     title: str,
     content: str,
+    assistant_id: str | None = Query(None),
     db: Session = Depends(get_db),
     current_user: User = Depends(admin_required),
 ):
-    return update_prompt(prompt_id=prompt_id, title=title, content=content, db=db)
+    return update_prompt(prompt_id=prompt_id, title=title, content=content, assistant_id=assistant_id, db=db)
 
 
 @router.patch("/{prompt_id}/delete")

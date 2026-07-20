@@ -12,7 +12,7 @@ class Prompt(Base):
     title = Column(String(100), nullable=False)  # optional name for display
     content = Column(Text, nullable=True)       # actual prompt content
     
-    assistant_id = Column(Text, nullable=False)
+    assistant_id = Column(Text, nullable=True)
 
     is_deleted = Column(Boolean, default=False)
 

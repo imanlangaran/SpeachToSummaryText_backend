@@ -22,7 +22,9 @@ def summarise_text(text, prompt) -> str:
         raise RuntimeError(f"gpt summarization failed: {error}")
 
 
-def summarise_text_assistant(text: str, assistant_id: str) -> str:
+def summarise_text_assistant(text: str, assistant_id: str | None, prompt_obj) -> str:
+    if not assistant_id:
+        return summarise_text(text, prompt_obj)
     try:
         client = get_openai_client()
         # Create a thread and run the assistant
