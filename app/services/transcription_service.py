@@ -36,7 +36,7 @@ def transcribe_audio(file_path: str, prompt: str | None = None) -> str:
                 chunk.export(temp_file.name, format="mp3")
                 with open(temp_file.name, "rb") as f:
                     transcript = client.audio.transcriptions.create(
-                        model="gpt-4o-transcribe",
+                        model="whisper-large-v3-turbo",
                         file=f,
                         language="fa",
                         prompt=prompt,
