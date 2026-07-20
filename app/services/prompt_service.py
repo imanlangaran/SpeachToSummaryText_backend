@@ -7,10 +7,12 @@ from app.repositories.prompt_repo import PromptRepository
 
 class PromptService:
     def __init__(self, db: Session):
+        self.db = db
         self.repo = PromptRepository(db)
 
     def create(self, title: str, content: str, assistant_id: str | None = None) -> dict:
         prompt = self.repo.create(title=title, content=content, assistant_id=assistant_id)
+        self.db.commit()
         return self._to_dict(prompt)
 
     def list_all(self, include_deleted: bool = False) -> list[dict]:
@@ -22,14 +24,17 @@ class PromptService:
         if assistant_id is not None:
             data["assistant_id"] = assistant_id
         prompt = self.repo.update(prompt_id, **data)
+        self.db.commit()
         return self._to_dict(prompt)
 
     def soft_delete(self, prompt_id: int) -> dict:
         prompt = self.repo.update(prompt_id, is_deleted=True)
+        self.db.commit()
         return {"message": "Prompt deleted"}
 
     def restore(self, prompt_id: int) -> dict:
         prompt = self.repo.update(prompt_id, is_deleted=False)
+        self.db.commit()
         return {"message": "Prompt restored"}
 
     def _to_dict(self, prompt) -> dict:

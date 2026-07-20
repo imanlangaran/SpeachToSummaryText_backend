@@ -8,6 +8,7 @@ from app.repositories.user_repo import UserRepository
 
 class AuthService:
     def __init__(self, db: Session):
+        self.db = db
         self.user_repo = UserRepository(db)
 
     def register(self, email: str, password: str) -> dict:
@@ -16,6 +17,7 @@ class AuthService:
             raise DuplicateError("Email already registered")
         hashed = hash_password(password)
         user = self.user_repo.create(email=email, hashed_password=hashed)
+        self.db.commit()
         return {"id": user.id, "email": user.email, "is_admin": user.is_admin, "created_at": user.created_at}
 
     def login(self, email: str, password: str) -> dict:
