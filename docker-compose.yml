@@ -44,7 +44,7 @@ services:
       OPENAI_API_KEY: "${OPENAI_API_KEY:-}"
 
       # App
-      CORS_ORIGINS: "${CORS_ORIGINS:-[*]}"
+      CORS_ORIGINS: "${CORS_ORIGINS:-[\"*\"]}"
       UVICORN_EXTRA_ARGS: "--workers 4"
     env_file:
       - .env
